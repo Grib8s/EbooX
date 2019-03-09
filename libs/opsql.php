@@ -132,7 +132,7 @@ if ($page=="Favoris") $addsqlt=$mysql_prefix."ebooks."; else $addsqlt="";
     }
 
 // RECHERCHE DE LIVRES ------------------------------------------------------------------
-if ($page=="Books") {
+if ($page=="Books"&&$user['type']!="") {
 	// effacer la recherche
 	if ($_POST['delsearchbook']=="1") {
 		unset($_SESSION['searchbook']);
