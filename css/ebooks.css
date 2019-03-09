@@ -1,0 +1,23 @@
+.form-signin {
+  max-width: 330px;
+  padding: 15px;
+  margin: 0 auto;
+}
+.bg-image {
+    position: relative;
+}
+.bg-image img {
+    display: block;
+    width: 100%;
+    max-width: 250px; 
+    max-height: 400px; 
+    margin: 0 auto;
+}
+.bg-image h3 {
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    color: white;
+    text-shadow: black 0.1em 0.1em 0.2em;
+    
+}
