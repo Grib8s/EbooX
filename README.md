@@ -1,2 +1,2 @@
 # EbooX
-php javascript epub collection manager
+php javascript epub collection manager multi-user
