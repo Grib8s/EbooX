@@ -13,11 +13,20 @@
 		<li><a href="?page=Outils&outil=auteurs">Vérifier les auteurs</a></li>
 		<li><a href="?page=Outils&outil=auteurvalid">Auteurs validés</a></li>
 	</ul>
-	
 </ul>
+<?php showdiskspace(); ?>
+
 </div>
 
 <?php
+
+// espace disque
+
+
+
+
+
+
 $outil=$_GET['outil'];
 
 

@@ -107,7 +107,6 @@ if (!$_SESSION['class']) $_SESSION['class']="titre";
 $eboox_class=$_SESSION['class'];
 $_SESSION['class']=$eboox_class;
 
-$limit=20;
 $start=0;
 if ($_GET['p']) $p=$_GET['p']; else $p=1;
 $start=($p*$limit)-$limit;

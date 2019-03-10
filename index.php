@@ -2,11 +2,20 @@
 <html lang="fr">
 <?php
 session_start();
+include ("conf/config.inc.php");
+
+//If the HTTPS is not found to be "on"
+if((!isset($_SERVER["HTTPS"]) || $_SERVER["HTTPS"] != "on")&&$forceSSL=="yes")
+{
+    //Tell the browser to redirect to the HTTPS URL.
+    header("Location: https://" . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"], true, 301);
+    //Prevent the rest of the script from executing.
+    exit;
+}
 
 $page = $_GET['page'];
 if (!$_GET['page']) $page="Books";
 
-include ("conf/config.inc.php");
 include ("libs/libs.php");
 include ("libs/opsql.php");
 
@@ -16,6 +25,7 @@ include ("libs/opsql.php");
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="Collection privée de livres électroniques">
     <meta name="author" content="Grib8s">
+    <meta name="robots" content="noindex, nofollow">
     <link rel="icon" href="favicon.ico">
 
     <title>EbooX - Collection privée de livres électroniques</title>

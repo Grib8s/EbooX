@@ -542,4 +542,27 @@ function modifcouverture ($idbook,$image,$pdo,$mysql_prefix) {
 	// enregistrer l'image
 	imagejpeg($pattern, $outputImage, 100);
 }
+function Space_size($Bytes)
+{
+  $Type=array("", "K", "M", "G", "T", "P", "E", "Z", "Y");
+  $Index=0;
+  while($Bytes>=1024)
+  {
+    $Bytes/=1024;
+    $Index++;
+  }
+  return("".sprintf('%1.2f' ,$Bytes)." ".$Type[$Index]."bits");
+}
+
+function showdiskspace() {
+	$path = "/";
+	$freespace=disk_free_space($path);
+	$totalspace=disk_total_space($path);
+	$usedspace=$totalspace-$freespace;
+	$percentusedspace=sprintf('%1.2f' ,100*$usedspace/$totalspace);
+	echo "<div class=\"progress\">
+	  <div class=\"progress-bar bg-info\" role=\"progressbar\" style=\"width: ".$percentusedspace."%\" aria-valuenow=\"".$percentusedspace."\" aria-valuemin=\"0\" aria-valuemax=\"100\"></div>
+	</div>";
+	echo "<p class=\"text-muted\"><i>".Space_size($usedspace)." utilisés, ".Space_size($freespace)." libres sur ".Space_size($totalspace)." au total (".$percentusedspace."%)</i></p>";
+}
 ?>
