@@ -4,7 +4,10 @@
 	$q = $pdo->prepare($query);
 	$q->execute();
 	$j=0;
-	echo"<div class=\"card\"><div class=\"row p-2\"><div class=\"col-12\">";
+	$i=0;
+	echo"<div class=\"card\">
+	<input class=\"form-control\" id=\"inputsearch\" type=\"text\" placeholder=\"Rechercher un auteur\">
+	<div class=\"row p-2\" id=\"divsearch\"><div class=\"col-lg-4\">";
 	while ($auteur=$q->fetch()) {
 		
 		//affichage de la selection
@@ -40,7 +43,8 @@
 		  </div>
 		</div>";	
 		
-		
+		$i++;
+		if ($i>$nba/3) { echo "</div><div class=\"col-lg-4\">";$i=0; }
 		
 		
 		

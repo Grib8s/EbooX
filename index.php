@@ -43,7 +43,7 @@ include ("libs/opsql.php");
     <link rel="stylesheet" href="css/upload.css">
   </head>
 
-  <body style="background-color:#EEEEEE">
+  <body>
 	<?php
 	if (!$_SESSION['user']) {
 		//del_empty_folder ('Books'); 
@@ -63,40 +63,40 @@ include ("libs/opsql.php");
         <div class="collapse navbar-collapse" id="navbarCollapse">
           <ul class="navbar-nav mr-auto">
       <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Classement">
-          <i class="fa fa-list-ul"></i>
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <i class="fa fa-list-ul" data-toggle="tooltip" data-placement="bottom" data-html="true" title="<em>Classement</em>"></i><em class="d-md-none"> Classement</em>
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-          <a class="dropdown-item" href="?page=<?php echo $page; ?>&class=t"><?php if ($eboox_class=="titre") echo "<i class=\"fas fa-check\"></i> "; ?>Titre</a>
-          <a class="dropdown-item" href="?page=<?php echo $page; ?>&class=at"><?php if ($eboox_class=="auteur") echo "<i class=\"fas fa-check\"></i> "; ?>Auteur</a>
-          <a class="dropdown-item" href="?page=<?php echo $page; ?>&class=a"><?php if ($eboox_class=="aleatoire") echo "<i class=\"fas fa-check\"></i> "; ?>Aléatoire</a>
-          <a class="dropdown-item" href="?page=<?php echo $page; ?>&class=n"><?php if ($eboox_class=="nouveautee") echo "<i class=\"fas fa-check\"></i> "; ?>Nouveautées</a>
+          <a class="dropdown-item" href="?page=<?php echo $page; ?>&class=t"><?php if ($eboox_class=="titre") echo "<i class=\"fas fa-check\"></i> "; ?><em>Titre</em></a>
+          <a class="dropdown-item" href="?page=<?php echo $page; ?>&class=at"><?php if ($eboox_class=="auteur") echo "<i class=\"fas fa-check\"></i> "; ?><em>Auteur</em></a>
+          <a class="dropdown-item" href="?page=<?php echo $page; ?>&class=a"><?php if ($eboox_class=="aleatoire") echo "<i class=\"fas fa-check\"></i> "; ?><em>Aléatoire</em></a>
+          <a class="dropdown-item" href="?page=<?php echo $page; ?>&class=n"><?php if ($eboox_class=="nouveautee") echo "<i class=\"fas fa-check\"></i> "; ?><em>Nouveautées</em></a>
         </div>
       </li>
             <li class="nav-item">
-              <a class="nav-link" href="/" title="Livres"><i class="fa fa-book"></i></a>
+              <a class="nav-link" href="/"><i class="fa fa-book" data-toggle="tooltip" data-placement="bottom" data-html="true" title="<em>Livres</em>"></i><em class="d-md-none"> Livres</em></a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="?page=Favoris" title="Favoris"><i class="fa fa-star"></i></a>
+              <a class="nav-link" href="?page=Favoris"><i class="fa fa-star" data-toggle="tooltip" data-placement="bottom" data-html="true" title="<em>Favoris</em>"></i><em class="d-md-none"> Favoris</em></a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="?page=Auteurs" title="Auteurs"><i class="fas fa-pen-nib"></i></i></a>
+              <a class="nav-link" href="?page=Auteurs"><i class="fas fa-pen-nib" data-toggle="tooltip" data-placement="bottom" data-html="true" title="<em>Auteurs</em>"></i><em class="d-md-none"> Auteurs</em></a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="?page=Profils" title="Utilisateurs"><i class="fa fa-users"></i></a>
+              <a class="nav-link" href="?page=Profils"><i class="fa fa-users" data-toggle="tooltip" data-placement="bottom" data-html="true" title="<em>Utilisateurs</em>"></i><em class="d-md-none"> Utilisateurs</em></a>
             </li>
             <?php if ($user['type']=="admin"||$user['type']=="contributeur") { ?>
             <li class="nav-item">
-              <a class="nav-link" href="?page=Upload" title="Uploader des livres"><i class="fa fa-folder-plus"></i></a>
+              <a class="nav-link" href="?page=Upload"><i class="fa fa-folder-plus" data-toggle="tooltip" data-placement="bottom" data-html="true" title="<em>Ajout de livres</em>"></i><em class="d-md-none"> Ajout de livres</em></a>
             </li>
             <?php } ?>
             <?php if ($user['type']=="admin") { ?>
             <li class="nav-item">
-              <a class="nav-link" href="?page=Outils" title="Gérer le bibliothèque"><i class="fa fa-tools"></i></a>
+              <a class="nav-link" href="?page=Outils"><i class="fa fa-tools" data-toggle="tooltip" data-placement="bottom" data-html="true" title="<em>Entretien</em>"></i><em class="d-md-none"> Entretien</em></a>
             </li>
             <?php } ?>
             <li class="nav-item">
-              <a class="nav-link" href="?logout=1" title="Se déconnecter"><i class="fa fa-sign-out-alt"></i></a>
+              <a class="nav-link" href="?logout=1"><i class="fa fa-sign-out-alt" data-toggle="tooltip" data-placement="bottom" data-html="true" title="<em>Déconnexion</em>"></i><em class="d-md-none"> Déconnexion</em></a>
             </li>          
             </ul>
           <form class="form-inline mt-2 mt-md-0" method="POST" action="/">
@@ -108,7 +108,7 @@ include ("libs/opsql.php");
     </header>
 
     <!-- Begin page content-->
-    <main role="main" class="container">
+    <main role="main" class="container containerpage">
 	<?php
 	if ($page=="Books") include("pages/Books.php");
 	if ($page=="Auteurs") include("pages/Auteurs.php");
@@ -139,7 +139,7 @@ include ("libs/opsql.php");
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="js/jQuery.js"></script>
     <!--<script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery-slim.min.js"><\/script>')</script>-->
-    <script src="js/popper.min.js"></script>
+    <script src="js/popper.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <!-- The jQuery UI widget factory, can be omitted if jQuery UI is already included -->
 	<script src="js/jquery.ui.widget.js"></script>
@@ -174,6 +174,22 @@ include ("libs/opsql.php");
 	    })
 	});
 	</script>
+	<script>
+	$(function () {
+	  $('[data-toggle="tooltip"]').tooltip()
+	})
+	</script>
+<script>
+$(document).ready(function(){
+  $("#inputsearch").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#divsearch h6").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
+});
+</script>
 	<?php } ?>
+	
   </body>
 </html>

@@ -1,6 +1,6 @@
-    <div class="alert alert-dark" role="alert">
-	  <?php echo $classtext;
-	  echo "<br>Affichage des recommandations seulement";
+    <div class="card p-3 mb-4">
+	  <?php echo "<h4 class=\"text-center\"><em>".$classtext."</em></h4>";
+	  echo "<em class=\"text-center\">Affichage des recommandations seulement</em>";
 	  ?>
 	</div>
 <div class="row">

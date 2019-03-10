@@ -1,11 +1,13 @@
     <?php 
 	echo "<form class=\"form-inline\" name=\"searchdel\" method=\"POST\" action=\"/\"><input type=\"hidden\" name=\"delsearchbook\" value=\"1\"></form>";
     ?>
-    <div class="alert alert-dark" role="alert">
-	  <?php echo $classtext;
+    <div class="card p-3 mb-4">
+	  <?php echo "<h4 class=\"text-center\"><em>".$classtext."</em></h4>";
 	  if ($search!="") {
 	  	if ($_SESSION['searchauteurstrict']==1) $addtexts=" l'auteur"; else $addtexts="";
-	  	echo "<br><span class=\"badge badge-dark\" style=\"cursor:pointer\" onclick=\"window.document.searchdel.submit()\">Supprimer la recherche</span><br> Recherche de$addtexts : \"".$search."\"";
+	  	echo "<hr><a class=\"btn btn-sm btn-info\" style=\"cursor:pointer;color:#fff\" onclick=\"window.document.searchdel.submit()\">Supprimer la recherche</a>
+	  	<div class=\"text-center\">
+	  	Recherche de$addtexts : \"".$search."\"";
 	  	
 	  	if ($_SESSION['searchtitre']==1) $check1=" checked"; else $check1="";
 	  	if ($_SESSION['searchauteur']==1) $check2=" checked"; else $check2="";
@@ -13,33 +15,33 @@
 	  	if ($_SESSION['searchdescr']==1) $check3=" checked"; else $check3="";
 	  	if ($_SESSION['searchsujet']==1) $check4=" checked"; else $check4="";
 	  	if ($_SESSION['searchauteurstrict']!=1) {
-		  	echo "<br><b>Rechercher par : </b><br><form name=\"searchspec\" method=\"POST\" action=\"/\">
+		  	echo "<form name=\"searchspec\" method=\"POST\" action=\"/\">
 		  	
-		  	<div class=\"form-check form-check-inline\">
-			  <input class=\"form-check-input\" type=\"checkbox\" name=\"checktitre\" value=\"1\" onchange=\"this.form.submit()\"$check1>
-			  <label class=\"form-check-label\">Titre</label>
+		  	<div class=\"d-inline custom-control custom-checkbox ml-2\">
+			  <input class=\"custom-control-input\" id=\"TitreCheck\" type=\"checkbox\" name=\"checktitre\" value=\"1\" onchange=\"this.form.submit()\"$check1>
+			  <label class=\"custom-control-label\" for=\"TitreCheck\">Titre</label>
 			</div>
-		  	<div class=\"form-check form-check-inline\">
-			  <input class=\"form-check-input\" type=\"checkbox\" name=\"checkauteur\" value=\"1\" onchange=\"this.form.submit()\"$check2>
-			  <label class=\"form-check-label\">Auteur</label>
+		  	<div class=\"d-inline custom-control custom-checkbox ml-2\">
+			  <input class=\"custom-control-input\" id=\"AuteurCheck\" type=\"checkbox\" name=\"checkauteur\" value=\"1\" onchange=\"this.form.submit()\"$check2>
+			  <label class=\"custom-control-label\" for=\"AuteurCheck\">Auteur</label>
 			</div>";
 			/*<div class=\"form-check form-check-inline\">
 			  <input class=\"form-check-input\" type=\"checkbox\" name=\"checkauteurstrict\" value=\"1\" onchange=\"this.form.submit()\"$check5>
 			  <label class=\"form-check-label\">strict</label>
 			</div>*/
-		  	echo"<div class=\"form-check form-check-inline\">
-			  <input class=\"form-check-input\" type=\"checkbox\" name=\"checkdescr\" value=\"1\" onchange=\"this.form.submit()\"$check3>
-			  <label class=\"form-check-label\">Description</label>
+		  	echo"<div class=\"d-inline custom-control custom-checkbox ml-2\">
+			  <input class=\"custom-control-input\" id=\"DescrCheck\" type=\"checkbox\" name=\"checkdescr\" value=\"1\" onchange=\"this.form.submit()\"$check3>
+			  <label class=\"custom-control-label\" for=\"DescrCheck\">Description</label>
 			</div>
-		  	<div class=\"form-check form-check-inline\">
-			  <input class=\"form-check-input\" type=\"checkbox\" name=\"checksujet\" value=\"1\" onchange=\"this.form.submit()\"$check4>
-			  <label class=\"form-check-label\">Mots clefs</label>
+		  	<div class=\"d-inline custom-control custom-checkbox ml-2\">
+			  <input class=\"custom-control-input\" id=\"SujetCheck\" type=\"checkbox\" name=\"checksujet\" value=\"1\" onchange=\"this.form.submit()\"$check4>
+			  <label class=\"custom-control-label\" for=\"SujetCheck\">Mots clefs</label>
 			</div>
 			<input type=\"hidden\" name=\"searchchange\" value=\"go\">
 	
 		  	</form>";
 	  	}
-	  	//echo $request;
+	  	echo "</div>";
 	  }
 	  ?>
 	</div>

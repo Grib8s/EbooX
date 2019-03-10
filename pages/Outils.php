@@ -1,19 +1,30 @@
-<div class="card p-3 mb-4"><h3>Entretien</h3>
-<p>Voici une liste d'outils pour entretenir la bibliothèque.</p>
-<ul>
-	<li>Livres</li>
-	<ul>
-		<li><a href="?page=Outils&outil=doublons">Vérifier les doublons</a></li>
-		<li><a href="?page=Outils&outil=noauteur">Livres sans auteur</a></li>
-		<li><a href="?page=Outils&outil=nodescr">Livres sans descriptions</a></li>
-		<li><a href="?page=Outils&outil=nosujet">Livres sans mots clef</a></li>
-	</ul>
-	<li>Auteurs</li>
-	<ul>
-		<li><a href="?page=Outils&outil=auteurs">Vérifier les auteurs</a></li>
-		<li><a href="?page=Outils&outil=auteurvalid">Auteurs validés</a></li>
-	</ul>
-</ul>
+<div class="card p-3 mb-4">
+<h4 class="text-center"><em>Entretien</em></h4>
+<em class="text-center">Voici une liste d'outils pour entretenir la bibliothèque.</em>
+<hr>
+<div class="row">
+	<div class="dropdown col-6">
+	  <button class="btn btn-info btn-block dropdown-toggle" type="button" id="dropdownLivres" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+	    Livres
+	  </button>
+	  <div class="dropdown-menu" aria-labelledby="dropdownLivres">
+	    <li><a class="dropdown-item" href="?page=Outils&outil=doublons">Vérifier les doublons</a></li>
+		<li><a class="dropdown-item" href="?page=Outils&outil=noauteur">Livres sans auteur</a></li>
+		<li><a class="dropdown-item" href="?page=Outils&outil=nodescr">Livres sans descriptions</a></li>
+		<li><a class="dropdown-item" href="?page=Outils&outil=nosujet">Livres sans mots clef</a></li>
+	  </div>
+	</div>
+	<div class="dropdown col-6">
+	  <button class="btn btn-info btn-block dropdown-toggle" type="button" id="dropdownAuteurs" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+	    Auteurs
+	  </button>
+	  <div class="dropdown-menu" aria-labelledby="dropdownAuteurs">
+		<li><a class="dropdown-item" href="?page=Outils&outil=auteurs">Vérifier les auteurs</a></li>
+		<li><a class="dropdown-item" href="?page=Outils&outil=auteurvalid">Auteurs validés</a></li>
+	  </div>
+	</div>
+</div>
+<hr>
 <?php showdiskspace(); ?>
 
 </div>

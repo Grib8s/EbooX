@@ -98,9 +98,9 @@ function showbook($i,$titre,$auteur,$descr,$sujet,$filename,$path,$user=false,$p
             			?>
 		        	</div>
 		        	<div class="col-lg-10 pl-4">
-				      <h5><?php echo $titre; ?><small class="text-muted"> <?php echo $favtext; ?></small></h5>  		
+				      <h5><?php echo $titre; ?><small class="text-muted"> <em><?php echo $favtext; ?></em></small></h5>  		
 		              <div><h6 class="text-muted" style="cursor:pointer" onclick="window.document.gotoauteur<?php echo $i; ?>.submit()"><?php echo $auteur; ?></h6></div>
-		              <div style="height:130px;overflow:auto" class="pr-2"><p class="card-text mb-auto"><?php echo strip_tags($descr); ?></p></div>
+		              <div style="height:126px;overflow:auto" class="pr-2"><p class="card-text mb-auto"><em><?php echo strip_tags($descr); ?></em></p></div>
 		              <p><small>
 		              <?php
 		              

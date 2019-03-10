@@ -1,5 +1,6 @@
-<div class="card p-3 mb-4"><h3>Utilisateurs</h3>
-<p>Les avatars sont liés à votre adresse email grâce au service <a href="https://fr.gravatar.com/" target="new">Gravatar</a>.</p>
+<div class="card p-3 mb-4">
+<h4 class="text-center"><em>Utilisateurs</em></h4>
+<em class="text-center">Les avatars sont liés à votre adresse email grâce au service <a href="https://fr.gravatar.com/" target="new">Gravatar</a>.</em>
 </div>
 
 <?php if ($user['type']=="admin") { ?>

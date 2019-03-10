@@ -1,3 +1,4 @@
+/* miniatures de livres */
 .form-signin {
   max-width: 330px;
   padding: 15px;
@@ -20,4 +21,50 @@
     color: white;
     text-shadow: black 0.1em 0.1em 0.2em;
     
+}
+/* page */
+body { 
+  background: url(../images/bk.jpg) no-repeat center center fixed; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+.containerpage {
+  background-color: lightgrey;
+  border-right: 1px solid grey;
+  border-left: 1px solid grey;
+  box-shadow: 0 25px 15px lightgrey;
+  padding-bottom:10px;
+  margin-top:50px;
+  padding-top:10px;
+}
+.alert {
+	border-color:grey;
+}
+.card {
+	border-color:grey;
+}
+/* navigation */
+.page-link{
+	color:#17A2B8;
+}
+.page-item.active .page-link {
+ 
+  z-index: 1;
+ 
+  color: #fff;
+ 
+  background-color: #17A2B8;
+  border:none;
+
+}
+.page-link:focus, .page-link:hover {
+ 
+  color: grey;
+  background-color: lightgrey;
+  text-decoration: none;
+}
+.custom-checkbox .custom-control-input:checked~.custom-control-label::before{
+  background-color:#17A2B8;
 }
