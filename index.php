@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="fr">
+<html lang="fr" style="overflow-y: scroll;">
 <?php
 session_start();
 include ("conf/config.inc.php");
@@ -62,61 +62,92 @@ include ("libs/opsql.php");
         </button>
         <div class="collapse navbar-collapse" id="navbarCollapse">
           <ul class="navbar-nav mr-auto">
-      <li class="nav-item dropdown">
+      <!--<li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           <i class="fa fa-list-ul" data-toggle="tooltip" data-placement="bottom" data-html="true" title="<em>Classement</em>"></i><em class="d-md-none"> Classement</em>
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-          <a class="dropdown-item" href="?page=<?php echo $page; ?>&class=t"><?php if ($eboox_class=="titre") echo "<i class=\"fas fa-check\"></i> "; ?><em>Titre</em></a>
-          <a class="dropdown-item" href="?page=<?php echo $page; ?>&class=at"><?php if ($eboox_class=="auteur") echo "<i class=\"fas fa-check\"></i> "; ?><em>Auteur</em></a>
-          <a class="dropdown-item" href="?page=<?php echo $page; ?>&class=a"><?php if ($eboox_class=="aleatoire") echo "<i class=\"fas fa-check\"></i> "; ?><em>Aléatoire</em></a>
-          <a class="dropdown-item" href="?page=<?php echo $page; ?>&class=n"><?php if ($eboox_class=="nouveautee") echo "<i class=\"fas fa-check\"></i> "; ?><em>Nouveautées</em></a>
+          <a class="dropdown-item" href="?page=< ?php echo $page; ?>&class=t">< ?php if ($eboox_class=="titre") echo "<i class=\"fas fa-check\"></i> "; ?><em>Titre</em></a>
+          <a class="dropdown-item" href="?page=< ?php echo $page; ?>&class=at">< ?php if ($eboox_class=="auteur") echo "<i class=\"fas fa-check\"></i> "; ?><em>Auteur</em></a>
+          <a class="dropdown-item" href="?page=< ?php echo $page; ?>&class=a">< ?php if ($eboox_class=="aleatoire") echo "<i class=\"fas fa-check\"></i> "; ?><em>Aléatoire</em></a>
+          <a class="dropdown-item" href="?page=< ?php echo $page; ?>&class=n">< ?php if ($eboox_class=="nouveautee") echo "<i class=\"fas fa-check\"></i> "; ?><em>Nouveautées</em></a>
         </div>
-      </li>
+      </li>-->
             <li class="nav-item">
-              <a class="nav-link" href="/"><i class="fa fa-book" data-toggle="tooltip" data-placement="bottom" data-html="true" title="<em>Livres</em>"></i><em class="d-md-none"> Livres</em></a>
+              <a class="nav-link<?php if ($page=="Books") echo " active";?>" href="/"><i class="fa fa-book" data-toggle="tooltip" data-placement="bottom" data-html="true" title="<em>Livres</em>"></i><em class="d-md-none"> Livres</em></a>
             </li>
+            <!--<li class="nav-item">
+              <a class="nav-link" href="?page=Favoris"><i class="fa fa-star" data-toggle="tooltip" data-placement="bottom" data-html="true" title="<em>Recommandations</em>"></i><em class="d-md-none"> Recommandations</em></a>
+            </li>-->
             <li class="nav-item">
-              <a class="nav-link" href="?page=Favoris"><i class="fa fa-star" data-toggle="tooltip" data-placement="bottom" data-html="true" title="<em>Favoris</em>"></i><em class="d-md-none"> Favoris</em></a>
+              <a class="nav-link<?php if ($page=="Auteurs") echo " active";?>" href="?page=Auteurs"><i class="fas fa-pen-nib" data-toggle="tooltip" data-placement="bottom" data-html="true" title="<em>Auteurs</em>"></i><em class="d-md-none"> Auteurs</em></a>
             </li>
+            
+            <!--<li class="nav-item">
+            <a class="nav-link" id="toggleslide" data-toggle="collapse" href="#collapseslide" role="button" aria-expanded="false" aria-controls="collapseExample"><i class="far fa-images" data-toggle="tooltip" data-placement="bottom" data-html="true" title="<em>Slide</em>"></i><em class="d-md-none"> Slide</em></a>
+            </li>-->
+            
+            
             <li class="nav-item">
-              <a class="nav-link" href="?page=Auteurs"><i class="fas fa-pen-nib" data-toggle="tooltip" data-placement="bottom" data-html="true" title="<em>Auteurs</em>"></i><em class="d-md-none"> Auteurs</em></a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="?page=Profils"><i class="fa fa-users" data-toggle="tooltip" data-placement="bottom" data-html="true" title="<em>Utilisateurs</em>"></i><em class="d-md-none"> Utilisateurs</em></a>
+              <a class="nav-link<?php if ($page=="Profils") echo " active";?>" href="?page=Profils"><i class="fa fa-users" data-toggle="tooltip" data-placement="bottom" data-html="true" title="<em>Utilisateurs</em>"></i><em class="d-md-none"> Utilisateurs</em></a>
             </li>
             <?php if ($user['type']=="admin"||$user['type']=="contributeur") { ?>
             <li class="nav-item">
-              <a class="nav-link" href="?page=Upload"><i class="fa fa-folder-plus" data-toggle="tooltip" data-placement="bottom" data-html="true" title="<em>Ajout de livres</em>"></i><em class="d-md-none"> Ajout de livres</em></a>
+              <a class="nav-link<?php if ($page=="Upload") echo " active";?>" href="?page=Upload"><i class="fa fa-book-medical" data-toggle="tooltip" data-placement="bottom" data-html="true" title="<em>Ajout de livres</em>"></i><em class="d-md-none"> Ajout de livres</em></a>
             </li>
             <?php } ?>
             <?php if ($user['type']=="admin") { ?>
             <li class="nav-item">
-              <a class="nav-link" href="?page=Outils"><i class="fa fa-tools" data-toggle="tooltip" data-placement="bottom" data-html="true" title="<em>Entretien</em>"></i><em class="d-md-none"> Entretien</em></a>
+              <a class="nav-link<?php if ($page=="Outils") echo " active";?>" href="?page=Outils"><i class="fa fa-tools" data-toggle="tooltip" data-placement="bottom" data-html="true" title="<em>Entretien</em>"></i><em class="d-md-none"> Entretien</em></a>
             </li>
             <?php } ?>
-            <li class="nav-item">
-              <a class="nav-link" href="?logout=1"><i class="fa fa-sign-out-alt" data-toggle="tooltip" data-placement="bottom" data-html="true" title="<em>Déconnexion</em>"></i><em class="d-md-none"> Déconnexion</em></a>
-            </li>          
+         
             </ul>
-          <form class="form-inline mt-2 mt-md-0" method="POST" action="/">
-            <input name="searchbook" class="form-control input-sm" type="text" placeholder="Recherche" aria-label="Recherche">
-          </form>
+          <!--<form class="form-inline mt-2 mt-md-0" method="POST" action="/">
+            <input name="searchbook" class="form-control input-sm" type="text" placeholder="Recherche" aria-label="Recherche" value="< ?php //echo $search; ?>">
+          </form>-->
+          
+          <ul class="navbar-nav ml-auto">
+          <?php 
+          $image ="https://www.gravatar.com/avatar/".md5($user['email'])."?s=200&d=".urlencode("https://".$_SERVER['SERVER_NAME']."/images/".$user['type'].".jpg")."";
+        	echo "<li class=\"profilclass dropdown mt-2 mt-md-0 nav-item\">
+				            <a class=\"nav-link dropdown-toggle\" href=\"#\" id=\"navbarDropdownMenuLink\" role=\"button\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\">
+				            <em><b>".$user['nick']."</b></em>
+				            </a>
+				        
+                            <div class=\"dropdown-menu dropdown-menu-right w-100\" aria-labelledby=\"navbarDropdownMenuLink\">";
+	        					showuser($user['nick'],$user['email'],$user['type'],$user['id'],$user['valid'],$pdo,$mysql_prefix,$user,"menu");
+	        					
+	        					echo"<a class=\"dropdown-item\" href=\"#\" data-toggle=\"modal\" data-target=\"#ModalmodifU".$user['id']."\"><i class=\"fa fa-edit\"></i><em> Modifier</em></a>";
+					          echo"<a class=\"dropdown-item\"  href=\"?logout=1\"><i class=\"fa fa-sign-out-alt\"></i><em> Déconnexion</em></a>
+					        </div>
+				        
+				        </li>";
+          ?>
+        <!--	<li class="nav-item">
+              <a class="nav-link" href="?logout=1"><i class="fa fa-sign-out-alt" data-toggle="tooltip" data-placement="bottom" data-html="true" title="<em>Déconnexion</em>"></i><em class="d-md-none"> Déconnexion</em></a>
+
+            </li> -->
+          </ul>
         </div>
         </div>
       </nav>
     </header>
-
+    <? modifusertab($user['type'],$user['id'],$user['email'],$user['nick']); ?>
     <!-- Begin page content-->
+    
     <main role="main" class="container containerpage">
 	<?php
+	//include('pages/carousel.php');
 	if ($page=="Books") include("pages/Books.php");
+	if ($page=="Books2") include("pages/Books2.php");
 	if ($page=="Auteurs") include("pages/Auteurs.php");
 	if ($page=="Upload"&&($user['type']=="admin"||$user['type']=="contributeur")) include("pages/Upload.php");
 	if ($page=="Profils") include("pages/Profils.php");
 	if ($page=="Favoris") include("pages/Favoris.php");
 	if ($page=="Outils"&&$user['type']=="admin") include("pages/Outils.php");
 	//if ($page=="ModifBook"&&$user['type']=="admin") include("pages/ModifBook.php");
+	include ("pages/chat.php");
 	?>
         
     </main>
@@ -130,7 +161,7 @@ include ("libs/opsql.php");
 	$qtot->execute();
     $totalbooks = $qtot->rowCount();
       	?>
-        <span class="text-muted"><b>EbooX</b> - <i>Collection privée de livres électroniques. (<?php echo $totalbooks; ?> livres)</i></span>
+        <span class="text-muted"><b>EbooX</b> - <i>Collection privée de livres électroniques. (<?php echo $totalbooks; ?> livres)</i></span><iframe id="dlframe" name="dlframe"></iframe>
       </div>
     </footer>
 
@@ -149,16 +180,21 @@ include ("libs/opsql.php");
 	<script src="js/upload.js"></script>
 
 	<script>
+
 	$(function () {
 	    'use strict';
 	    $('#fileupload').fileupload({
 	        //url: url,
 	        dataType: 'json',
+	        sequentialUploads:true,
 	        done: function (e, data) {
 	            $.each(data.result.files, function (index, file) {
-	            	var cuurl = 'pages/majbiblio.php?user=<?php echo $user['id']; ?>&path=<?php echo rand(); ?>&fileproc=' + encodeURIComponent(file.name) + '';
+	            	var cuurl = 'majbiblio.php?user=<?php echo $user['id']; ?>&path=<?php echo rand(); ?>&fileproc=' + encodeURIComponent(file.name) + '';
 	                //$('<p/>').text(cuurl).appendTo('#files');
-	                $("#addedbooks").load(cuurl);
+	                		//await sleep(500);
+							$('#addedbooks').prepend($('<div></div>').load(cuurl));
+	                
+	                //$("#addedbooks").load(cuurl);
 	            });
 	        },
 	        progressall: function (e, data) {
@@ -169,7 +205,7 @@ include ("libs/opsql.php");
 	            );
 	        },
 	        stop: function (e) {
-			    $('<p/>').text('Upload terminé, veuillez attendre le défilement des livres...').appendTo('#files');
+			    $('<p/>').text('Upload terminé !').appendTo('#files');
 			}
 	    })
 	});
@@ -189,6 +225,264 @@ $(document).ready(function(){
   });
 });
 </script>
+<script>
+$('#toggleslide').click(function(e){
+    	
+    	var slideOpen = localStorage['slideopen'];
+    	
+    	if (slideOpen==='yes') localStorage['slideopen']='no';
+    	if (slideOpen==='no') localStorage['slideopen']='yes';
+});
+	(function($) {
+    $(document).ready(function() {
+    	
+    	var slideOpen = localStorage['slideopen'];
+    	if (!slideOpen) {
+	        // open popup
+	        localStorage['slideopen'] = "no";
+    	}
+		var slideOpen = localStorage['slideopen'];
+    	
+        var $slidebox = $('#collapseslide');
+            if (slideOpen==='yes') $slidebox.collapse('show');
+        
+    });
+})(jQuery);
+</script>
+<!-- chat -->
+<script>
+	(function($) {
+    $(document).ready(function() {
+    	
+    	var chatOpen = localStorage['chatopen'];
+    	if (!chatOpen) {
+	        // open popup
+	        localStorage['chatopen'] = "yes";
+    	}
+		var chatOpen = localStorage['chatopen'];
+    	
+        var $chatbox = $('.chatbox'),
+            $chatboxTitle = $('.chatbox__title'),
+            $chatboxTitleClose = $('.chatbox__title__close'),
+            $chatboxCredentials = $('.chatbox__credentials');
+            if (chatOpen==='yes') $chatbox.removeClass('chatbox--tray');
+        $chatboxTitle.on('click', function() {
+            $chatbox.toggleClass('chatbox--tray');
+            if (chatOpen==='yes') localStorage['chatopen']='no';
+            if (chatOpen==='no') localStorage['chatopen']='yes';
+            sessionStorage
+        });
+        $chatboxTitleClose.on('click', function(e) {
+            e.stopPropagation();
+            $chatbox.addClass('chatbox--closed');
+        });
+        $chatbox.on('transitionend', function() {
+            if ($chatbox.hasClass('chatbox--closed')) $chatbox.remove();
+        });
+        /*$chatboxCredentials.on('submit', function(e) {
+            e.preventDefault();
+            $chatbox.removeClass('chatbox--empty');
+        });*/
+    });
+})(jQuery);
+</script>
+<!-- chat https://openclassrooms.com/fr/courses/1567926-un-site-web-dynamique-avec-jquery/1569840-tp-le-tchat-en-ajax-->
+<script>
+$('#submitchat').click(function(e){
+    e.preventDefault(); // on empêche le bouton d'envoyer le formulaire
+
+    // on sécurise les données
+    var message = $('#messagechat').val();
+
+    if(message != ""){ // on vérifie que les variables ne sont pas vides
+        $.ajax({
+            url : "pages/chat/send.php", // on donne l'URL du fichier de traitement
+            type : "POST", // la requête est de type POST
+            data : "message=" + message // et on envoie nos données
+        });
+		$('#messagechat').val('');
+       //$('#messages').prepend("<p>" + message + "</p>"); // on ajoute le message dans la zone prévue
+
+    }
+});
+</script>
+
+<script>
+	$(document).ready(function () {
+    var interval = 1000;   //number of mili seconds between each call
+    
+    var refresh = function() {
+    	var premierID = $('#messages div:first').attr('id'); // on récupère l'id le plus récent
+        $.ajax({
+            url: "pages/chat/messages.php?id=" + premierID,
+            cache: false,
+            success: function(html) {
+                $('#messages').prepend(html);
+                setTimeout(function() {
+                	refresh();
+                }, interval);
+            }
+        });
+    };
+    refresh();
+});
+</script>
+<script>
+$("#formulairerech").submit(function(event) {
+	if (document.getElementById("textsearch").value.length > 3 && (document.getElementById("TitreCheck").checked == true||document.getElementById("AuteurCheck").checked == true||document.getElementById("DescrCheck").checked == true||document.getElementById("SujetCheck").checked == true))
+    {
+  /* stop form from submitting normally */
+  event.preventDefault();
+	$('#Renderbooks').hide();
+  /* get some values from elements on the page: */
+  var $form = $( this );
+  //var url = $form.attr( "action" );
+  var url = 'Bookspages.php?page=Books&p=1';
+  //before send
+  //$("body").addClass("loading");
+	//$('#Renderbooks').html('<div class="row col-12 text-center"><img src=images/ajax-loading.gif /></div>');
+  /* Send the data using post */
+  var posting = $.post(url , $( "#formulairerech" ).serialize() );
+
+  /* Alerts the results */
+  posting.done(function( data ) {
+     //use data
+     //$("body").removeClass("loading");
+	
+	    $('#Renderbooks').load('Bookspages.php?page=Books&p=1', function(){
+	        $('#Renderbooks').slideDown('slow');
+	    });
+
+  });
+    }
+});
+$("#formulairerech").keyup(function(event) {
+
+  /* stop form from submitting normally */
+  event.preventDefault();
+	if (document.getElementById("textsearch").value.length > 3 && (document.getElementById("TitreCheck").checked == true||document.getElementById("AuteurCheck").checked == true||document.getElementById("DescrCheck").checked == true||document.getElementById("SujetCheck").checked == true))
+    {
+		  $('#Renderbooks').hide();
+		  /* get some values from elements on the page: */
+		  var $form = $( this );
+		  //var url = $form.attr( "action" );
+		  var url = 'Bookspages.php?page=Books&p=1';
+		  //before send
+		  //$("body").addClass("loading");
+		  
+			//$('#Renderbooks').html('<div class="col-12 text-center"><img src=images/ajax-loading.gif /></div>');
+		  /* Send the data using post */
+		  var posting = $.post(url , $( "#formulairerech" ).serialize() );
+		
+		  /* Alerts the results */
+		  posting.done(function( data ) {
+		     //use data
+		     //$("body").removeClass("loading");
+			
+	    $('#Renderbooks').load('Bookspages.php?page=Books&p=1', function(){
+	        $('#Renderbooks').slideDown('slow');
+	    });
+			
+		
+		  });
+    }
+});
+$("#formulairerech").change(function(event) {
+
+  /* stop form from submitting normally */
+  event.preventDefault();
+
+		$('#Renderbooks').hide();
+		  /* get some values from elements on the page: */
+		  var $form = $( this );
+		  //var url = $form.attr( "action" );
+		  var url = 'Bookspages.php?page=Books&p=1';
+		  //before send
+		  //$("body").addClass("loading");
+		  
+			//$('#Renderbooks').html('<div class="col-12 text-center"><img src=images/ajax-loading.gif /></div>');
+		  /* Send the data using post */
+			var posting = $.post(url , $( "#formulairerech" ).serialize() );
+		
+		  /* Alerts the results */
+	posting.done(function( data ) {
+		     //use data
+		     //$("body").removeClass("loading");
+			
+	    $('#Renderbooks').load('Bookspages.php?page=Books&p=1', function(){
+	        $('#Renderbooks').slideDown('slow');
+	    });
+			
+		
+	});
+
+});
+$("#formulairedel").submit(function(event) {
+
+  /* stop form from submitting normally */
+  event.preventDefault();
+	$('#Renderbooks').hide();
+  /* get some values from elements on the page: */
+  var $form = $( this );
+  //var url = $form.attr( "action" );
+  var url = 'Bookspages.php?page=Books&p=1';
+  //before send
+  //$("body").addClass("loading");
+	//$('#Renderbooks').html('<div class="col-12 text-center"><img src=images/ajax-loading.gif /></div>');
+  /* Send the data using post */
+  var posting = $.post(url , $( "#formulairedel" ).serialize() );
+  $('#textsearch').val('');
+  $('#TitreCheck').prop( "checked", false );
+  $('#AuteurCheck').prop( "checked", false );
+  $('#DescrCheck').prop( "checked", false );
+  $('#SujetCheck').prop( "checked", false );
+  $('#formsearchdiv').collapse('hide');
+    
+  /* Alerts the results */
+  posting.done(function( data ) {
+     //use data
+     //$("body").removeClass("loading");
+	    $('#Renderbooks').load('Bookspages.php?page=Books&p=1', function(){
+	        $('#Renderbooks').slideDown('slow');
+	    });
+	
+
+  });
+});
+
+
+function changepage(pageid) {
+
+  /* stop form from submitting normally */
+  event.preventDefault();
+	$('#Renderbooks').hide();
+  //var url = $form.attr( "action" );
+  var cuurl = 'Bookspages.php?page=Books&p=' + pageid;
+  //before send
+  //$('#Renderbooks').html('<div class="col-12 text-center"><img src=images/ajax-loading.gif /></div>');
+
+	    $('#Renderbooks').load(cuurl, function(){
+	        $('#Renderbooks').slideDown('slow');
+	    });
+	
+}
+
+
+$(document).ready(function () {
+	//$('#Renderbooks').html('<div class="col-12 text-center"><img src=images/ajax-loading.gif /></div>');
+	$('#Renderbooks').hide();
+	    $('#Renderbooks').load('Bookspages.php?page=Books', function(){
+	        $('#Renderbooks').slideDown('slow');
+	    });
+	
+});
+ $('.dropdown-menu li').click(function (event) {
+
+         event.stopPropagation();
+  
+    });
+</script>
+
 	<?php } ?>
 	
   </body>
