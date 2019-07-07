@@ -7,9 +7,9 @@
 	<p>Afin de palier à déventuels soucis, merci de passer par <a href="https://calibre-ebook.com/" target="new">Calibre</a> et d'<b>exporter uniquement les fichiers epub propres et sans DRM </b>!</p>
 	<p>Le site vérifiera si le livre existe déjà et récupèrera automatiquement les infos si possible, sinon il ne sera pas uploadé.</p>
 	<p>Enfin, merci de réserver cet espace aux romans ;)</p>
-	<?php showdiskspace(); ?>
+	<?php Majspace($pdo,$mysql_prefix);showdiskspace($pdo,$mysql_prefix,$sizemax); ?>
 	<span class="btn btn-lg btn-success fileinput-button">
-        <i class="fa fa-book"></i>
+        <i class="fa fa-book-medical"></i>
         <span>Ajoutez vos epubs</span>
         <!-- The file input field used as target for the file upload widget -->
         <input id="fileupload" type="file" name="files[]" data-url="upload/" multiple>

@@ -1,5 +1,6 @@
 <?php
 $query="SELECT *, COUNT(titre) FROM ".$mysql_prefix."ebooks GROUP by titre HAVING COUNT(titre) >1;";
+//$query="SELECT * FROM ".$mysql_prefix."ebooks;";
 	$q = $pdo->prepare($query);
 	$q->execute();
 	//if ($eboox_class!="aleatoire") showpagination($p,$pmax); similar text
@@ -32,9 +33,10 @@ $query="SELECT *, COUNT(titre) FROM ".$mysql_prefix."ebooks GROUP by titre HAVIN
 		$qcheck->execute();
 		if ($qcheck->rowCount()==0) {
 			// affichage des doublons
-			$query2="SELECT ".$mysql_prefix."ebooks.* FROM ".$mysql_prefix."ebooks WHERE ".$mysql_prefix."ebooks.titre=:titre;";
+			$query2="SELECT ".$mysql_prefix."ebooks.* FROM ".$mysql_prefix."ebooks WHERE ".$mysql_prefix."ebooks.titre=:titre OR pathfile=:pathfile;";
 			$q2 = $pdo->prepare($query2);
 		    $q2->bindParam('titre', $booksearch['titre'], PDO::PARAM_STR);
+		    $q2->bindParam('pathfile', $booksearch['pathfile'], PDO::PARAM_STR);
 			$q2->execute();
 			if ($q2->rowCount()>0) {
 				echo "<form class=\"form-inline\" name=\"validdoublon".$i."\" method=\"POST\"><input type=\"hidden\" name=\"doublbook\" value=\"".$booksearch['titre']."\"></form>";

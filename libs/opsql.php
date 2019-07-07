@@ -8,14 +8,18 @@ try {
 }
 // UTILISATEUR --------------------------------------------------------------------
 //login
-if ($_POST['pass']&&$_POST['login']) login($_POST['pass'],$_POST['login'],$pdo,$mysql_prefix);
+if ($_POST['pass']&&$_POST['login']&&$_POST['timerok']<time()) {
+	if (login($_POST['pass'],$_POST['login'],$pdo,$mysql_prefix)==false) {
+		if(isset($_SESSION['timerlogin'])) $_SESSION['timerlogin']=$_SESSION['timerlogin']+1; else $_SESSION['timerlogin']=1;
+	} else unset($SESSION['timerlogin']);
+}
 //logout
 if ($_GET['logout']==1) {
 	session_destroy();
 	header("Refresh:0, url=/");
 }
 // renouvellement de la session
-if ($_SESSION['user']) {
+if (isset($_SESSION['user'])) {
 	$user=$_SESSION['user'];
 	$query="SELECT * FROM ".$mysql_prefix."users WHERE id=:id;";
 	  $q = $pdo->prepare($query);
@@ -98,7 +102,7 @@ if ($user['type']=="admin"&&$_POST['iduser']!=""&&$_POST['opsql']=="reactivuser"
 	$q->execute();	
 }
 // CLASSEMENT DE LIVRES ---------------------------------------------------------------
-if ($_GET['class']=="a") $_SESSION['class']="aleatoire";
+/*if ($_GET['class']=="a") $_SESSION['class']="aleatoire";
 if ($_GET['class']=="t") $_SESSION['class']="titre";
 if ($_GET['class']=="n") $_SESSION['class']="nouveautee";
 if ($_GET['class']=="at") $_SESSION['class']="auteur";
@@ -129,9 +133,9 @@ if ($page=="Favoris") $addsqlt=$mysql_prefix."ebooks."; else $addsqlt="";
     	$classtext="Classement par auteur";
     	$classsql=$addsqlt."auteur LIMIT $start,$limit";
     }
-
+*/
 // RECHERCHE DE LIVRES ------------------------------------------------------------------
-if ($page=="Books"&&$user['type']!="") {
+/*if ($page=="Books"&&$user['type']!="") {
 	// effacer la recherche
 	if ($_POST['delsearchbook']=="1") {
 		unset($_SESSION['searchbook']);
@@ -180,24 +184,70 @@ if ($page=="Books"&&$user['type']!="") {
 		$search=strip_tags($searchbook);
 		
 		if ($checktitre==1||$checkauteur==1||$checkdescr==1||$checksujet==1) {
-			$request = ' WHERE (';
+			//$request = ' WHERE (';
+			$request = ' WHERE ( CONCAT(';
 			$mots = explode(' ',$search);
-			if ($checktitre==1) {
+			
+			
+			if ($checkauteurstrict==1) $request .= 'auteur) = "'.$search.'")';
+			else {
+			
+				$i=0;
+				foreach($mots as $mot) {
+					if ($request!=" WHERE ( CONCAT(") $request.=' AND CONCAT(';
+					if ($checktitre==1) {
+						if ($request!=" WHERE ( CONCAT("&&$i>0) $request.=', " ",';
+						$request.='titre';
+						$i++;
+					}
+					if ($checkauteur==1) {
+						if ($request!=" WHERE ( CONCAT("&&$i>0) $request.=', " ",';
+						$request.='auteur';
+						$i++;
+					}
+					if ($checkdescr==1) {
+						if ($request!=" WHERE ( CONCAT("&&$i>0) $request.=', " ",';
+						$request.='descr';
+						$i++;
+					}
+					if ($checksujet==1) {
+						if ($request!=" WHERE ( CONCAT("&&$i>0) $request.=', " ",';
+						$request.='sujet';
+						$i++;
+					}
+					$request.=') LIKE "%'.$mot.'%"';
+					$i=0;
+				}
+				$request .= ')';
+			}
+			
+			/*if ($checktitre==1&&$checkauteur==1) {
 				foreach($mots as $mot)
 	        	{
-	                $request .= ' titre LIKE "%'.$mot.'%" AND';
+	                $request .= ' CONCAT(titre, " ", auteur) LIKE "%'.$mot.'%" AND';
 	        	} 
 	        	$request .= ' 1=1)';
 			}
-			if ($checkauteur==1) {
-				if ($request!=" WHERE (") $request .= ' OR (';
-				if ($checkauteurstrict==1) $request .= ' auteur = "'.$search.'" AND';
-				else foreach($mots as $mot)
-	        	{
-	                $request .= ' auteur LIKE "%'.$mot.'%" AND';
-	        	} 
-	        	$request .= ' 1=1)';
+			
+			else {
+					if ($checktitre==1) {
+						foreach($mots as $mot)
+			        	{
+			                $request .= ' titre LIKE "%'.$mot.'%" AND';
+			        	} 
+			        	$request .= ' 1=1)';
+					}
+					if ($checkauteur==1) {
+						if ($request!=" WHERE (") $request .= ' OR (';
+						if ($checkauteurstrict==1) $request .= ' auteur = "'.$search.'" AND';
+						else foreach($mots as $mot)
+			        	{
+			                $request .= ' auteur LIKE "%'.$mot.'%" AND';
+			        	} 
+			        	$request .= ' 1=1)';
+					}
 			}
+			
 			if ($checkdescr==1) {
 				if ($request!=' WHERE (') $request .= ' OR (';
 				foreach($mots as $mot)
@@ -213,24 +263,70 @@ if ($page=="Books"&&$user['type']!="") {
 		                $request .= ' sujet LIKE "%'.$mot.'%" AND';
 		        }
 		        $request .= ' 1=1)';
-			}
-		  
+			}*/
+/*
 		} else $request="";    
 		
 	} else {
 		$request="";
 		$search="";
 	}
-}	
+}
+
+if ($page=="Favoris"&&$user['type']!="") {
+	// recherche base
+	// effacer la recherche
+	if ($_POST['typerfilter']==0&&$_POST['userfilterchange']=="go") {
+		unset($_SESSION['typerfilter']);
+	}
+	
+	//gérer les options de recherche
+	if(isset($_POST['typerfilter'])) {
+		$_SESSION['typerfilter']=$_POST['typerfilter'];
+	} 
+
+	// créé la requette de recherche
+	if($_SESSION['typerfilter']>0) {
+
+			$typerfilter=$_SESSION['typerfilter'];
+			$_SESSION['typerfilter']=$typerfilter;
+
+		} else $typerfilter=0; 	
+
+	// recherche sur pseudo
+	// effacer la recherche
+	if ($_POST['userfilter']==0&&$_POST['userfilterchange']=="go") {
+		unset($_SESSION['userfilter']);
+	}
+	
+	//gérer les options de recherche
+	if($_POST['userfilter']>0) {
+		$_SESSION['userfilter']=$_POST['userfilter'];
+	} 
+
+	// créé la requette de recherche
+	if($_SESSION['userfilter']>0) {
+
+			$userfilter=$_SESSION['userfilter'];
+			$_SESSION['userfilter']=$userfilter;
+			$reqbdd=array("favoris", "ebooks", "listelec");
+			$request = " AND ".$mysql_prefix.$reqbdd[$typerfilter].".user=".$userfilter;
+		  
+		} else $request="";  
+	
+	
+}
 	// trouve le nombre de pages à afficher
 	if ($page=="Books") $querym="SELECT * FROM ".$mysql_prefix."ebooks".$request.";";
-	if ($page=="Favoris") $querym="SELECT ".$mysql_prefix."ebooks.* FROM ".$mysql_prefix."ebooks,".$mysql_prefix."favoris WHERE ".$mysql_prefix."ebooks.id=".$mysql_prefix."favoris.book;";
+	if ($page=="Favoris"&&$typerfilter==0) $querym="SELECT DISTINCT ".$mysql_prefix."ebooks.* FROM ".$mysql_prefix."ebooks,".$mysql_prefix."favoris WHERE ".$mysql_prefix."ebooks.id=".$mysql_prefix."favoris.book".$request.";";
+	if ($page=="Favoris"&&$typerfilter==2) $querym="SELECT DISTINCT ".$mysql_prefix."ebooks.* FROM ".$mysql_prefix."ebooks,".$mysql_prefix."listelec WHERE ".$mysql_prefix."ebooks.id=".$mysql_prefix."listelec.book".$request.";";
+	if ($page=="Favoris"&&$typerfilter==1) $querym="SELECT * FROM ".$mysql_prefix."ebooks WHERE 1=1".$request.";";
 	//echo $querym;
 	$qm = $pdo->prepare($querym);
 	$qm->execute();
     $pmax = ceil ($qm->rowCount()/$limit);
 
-
+*/
 // OPERATIONS SUR LES LIVRES ------------------------------------------------------------
 // modifier un livre
 if ($_POST['opsql']=="modifbook"&&$user['type']=="admin") {
@@ -243,6 +339,7 @@ if ($_POST['opsql']=="modifbook"&&$user['type']=="admin") {
 	$q->bindParam('descr', $_POST['cdescr'], PDO::PARAM_STR);
 	$q->bindParam('id', $_POST['bookid'], PDO::PARAM_INT);
 	$q->execute();
+	Majspace($pdo,$mysql_prefix,$_POST['bookid']);
 }
 
 // effacer un livre
@@ -252,35 +349,66 @@ if (isset($_POST['deletebook'])&&$user['type']=="admin") {
 	$qdel->bindParam('id', $_POST['deletebook'], PDO::PARAM_INT);
 	$qdel->execute();
 	$delbook=$qdel->fetch();
-	unlink('Books/'.$delbook['pathfile'].$delbook['filename']);
-	if (file_exists('Books/'.$delbook['pathfile'].'cover.jpg')) unlink('Books/'.$delbook['pathfile'].'cover.jpg');
+	
+	// vérif si exist ailleurs
+	$querydels="SELECT * FROM ".$mysql_prefix."ebooks WHERE id!=:id AND pathfile=:path;";
+	$qdels = $pdo->prepare($querydels);
+	$qdels->bindParam('path', $delbook['pathfile'], PDO::PARAM_STR);
+	$qdels->bindParam('id', $_POST['deletebook'], PDO::PARAM_INT);
+	$qdels->execute();
+	if ($qdels->rowCount()==0) {
+		unlink('Books/'.$delbook['pathfile'].$delbook['filename']);
+		if (file_exists('Books/'.$delbook['pathfile'].'cover.jpg')) unlink('Books/'.$delbook['pathfile'].'cover.jpg');
+	}
+	
 	$querydel2 = "DELETE FROM ".$mysql_prefix."ebooks WHERE id=:id;";
     $qdel2 = $pdo->prepare($querydel2);
     $qdel2->bindParam('id', $_POST['deletebook'], PDO::PARAM_INT);
     $qdel2->execute();
+    
     $query = "DELETE FROM ".$mysql_prefix."favoris WHERE book=:book;";
     $q = $pdo->prepare($query);
     $q->bindParam('book', $_POST['deletebook'], PDO::PARAM_INT);
     $q->execute();
 	if (file_exists('Books/'.$delbook['pathfile'])) del_empty_folder ('Books/'.$delbook['pathfile']);
+	Majspace($pdo,$mysql_prefix);
 }
 
 // ajouter en favoris
 if (isset($_POST['addfavbook'])) {
-	$query = "INSERT INTO ".$mysql_prefix."favoris (book, user) 
+	$queryopsql = "INSERT INTO ".$mysql_prefix."favoris (book, user) 
     VALUES (:book, :user);";
-    $q = $pdo->prepare($query);
-    $q->bindParam('book', $_POST['addfavbook'], PDO::PARAM_INT);
-    $q->bindParam('user', $user['id'], PDO::PARAM_INT);
-    $q->execute();
+    $qopsql = $pdo->prepare($queryopsql);
+    $qopsql->bindParam('book', $_POST['addfavbook'], PDO::PARAM_INT);
+    $qopsql->bindParam('user', $user['id'], PDO::PARAM_INT);
+    $qopsql->execute();
 }
 
 // supprimer le favoris
+if (isset($_POST['delllbook'])) {
+	$queryopsql = "DELETE FROM ".$mysql_prefix."listelec WHERE book=:book AND user=:user;";
+    $qopsql = $pdo->prepare($queryopsql);
+    $qopsql->bindParam('book', $_POST['delllbook'], PDO::PARAM_INT);
+    $qopsql->bindParam('user', $user['id'], PDO::PARAM_INT);
+    $qopsql->execute();
+}
+// ajouter en listelec
+if (isset($_POST['addllbook'])) {
+	$queryopsql = "INSERT INTO ".$mysql_prefix."listelec (book, user) 
+    VALUES (:book, :user);";
+    $qopsql = $pdo->prepare($queryopsql);
+    $qopsql->bindParam('book', $_POST['addllbook'], PDO::PARAM_INT);
+    $qopsql->bindParam('user', $user['id'], PDO::PARAM_INT);
+    $qopsql->execute();
+}
+
+// supprimer le listelec
 if (isset($_POST['delfavbook'])) {
-	$query = "DELETE FROM ".$mysql_prefix."favoris WHERE book=:book;";
-    $q = $pdo->prepare($query);
-    $q->bindParam('book', $_POST['delfavbook'], PDO::PARAM_INT);
-    $q->execute();
+	$queryopsql = "DELETE FROM ".$mysql_prefix."favoris WHERE book=:book AND user=:user;";
+    $qopsql = $pdo->prepare($queryopsql);
+    $qopsql->bindParam('book', $_POST['delfavbook'], PDO::PARAM_INT);
+    $qopsql->bindParam('user', $user['id'], PDO::PARAM_INT);
+    $qopsql->execute();
 }
 // ajouter un nodoublon
 if ($_POST['doublbook']!=""&&$user['type']=="admin") {

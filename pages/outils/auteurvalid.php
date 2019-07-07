@@ -3,6 +3,7 @@
 	$query="SELECT DISTINCT auteur FROM ".$mysql_prefix."auteurvalid ORDER BY auteur;";
 	$q = $pdo->prepare($query);
 	$q->execute();
+	$nba=$q->rowCount();
 	$j=0;
 	$i=0;
 	echo"<div class=\"card\">
@@ -44,8 +45,8 @@
 		</div>";	
 		
 		$i++;
-		if ($i>$nba/3) { echo "</div><div class=\"col-lg-4\">";$i=0; }
-		
+		//if ($i>$nba/3) { echo "</div><div class=\"col-lg-4\">";$i=0; }
+		echo "</div><div class=\"col-lg-4\">";
 		
 		
 

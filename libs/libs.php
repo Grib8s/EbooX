@@ -8,17 +8,20 @@ function login($pass,$log,$pdo,$mysql_prefix) {
 	  $q->execute();
 	$user=$q->fetch(); 
 	$_SESSION['user']=$user;
+	if ($q->rowCount()==0) return false;
 }
 
 function showbook($i,$titre,$auteur,$descr,$sujet,$filename,$path,$user=false,$page=false,$pdo=false,$mysql_prefix=false,$image=false) {
 						$patterns = array("&", "/", " ",",");
 						$string = str_replace($patterns, '-', $sujet);
 						$mots = explode('-',$string);
-						$pathto = implode('/', array_map('rawurlencode', explode('/', $path)));
-						if ($page!="Books"||$page!="Favoris") $patho="../".$pathto;
+						//$pathto = implode('/', array_map('rawurlencode', explode('/', $path)));
+						//if ($page!="Books"||$page!="Favoris") $patho="../".$pathto;
 		        foreach($mots as $mot)
 		        {	
-		        	if ($mot!="") echo "<form class=\"form-inline\" name=\"search".$mot.$i."\" method=\"POST\" action=\"/\"><input type=\"hidden\" name=\"searchbook\" value=\"".$mot."\"></form>";
+		        	if ($mot!="") echo "<form class=\"form-inline\" name=\"search".$mot.$i."\" method=\"POST\" action=\"/\"><input type=\"hidden\" name=\"searchbook\" value=\"".$mot."\">
+		        	<input type=\"hidden\" name=\"checktitre\" value=\"0\"><input type=\"hidden\" name=\"checkauteur\" value=\"0\"><input type=\"hidden\" name=\"checkdescr\" value=\"0\"><input type=\"hidden\" name=\"checkauteur\" value=\"0\">
+		        	<input type=\"hidden\" name=\"checksujet\" value=\"1\"><input type=\"hidden\" name=\"searchchange\" value=\"go\"></form>";
 		        }
 				if($user['type']=="admin") { ?>
 			       <form class="form-inline" name="delbook<?php echo $i; ?>" method="POST"><input type="hidden" name="deletebook" value="<?php echo $i; ?>"></form>
@@ -32,25 +35,62 @@ function showbook($i,$titre,$auteur,$descr,$sujet,$filename,$path,$user=false,$p
 			       <form class="form-inline" name="dellfav<?php echo $i; ?>" method="POST"><input type="hidden" name="delfavbook" value="<?php echo $i; ?>"></form>
 			    <?php
 			    }
+			    //gestion des listes de lecture
+			    if ($page=="Books"||$page=="Favoris") {?>
+			       <form class="form-inline" name="addll<?php echo $i; ?>" method="POST"><input type="hidden" name="addllbook" value="<?php echo $i; ?>"></form>
+			    <?php
+			    }
+			    if ($page=="Books"||$page=="Favoris") {?>
+			       <form class="form-inline" name="dellll<?php echo $i; ?>" method="POST"><input type="hidden" name="delllbook" value="<?php echo $i; ?>"></form>
+			    <?php
+			    }
+			    
 			    if ($page=="Books"||$page=="Favoris") {?>
 			       <form class="form-inline" name="modifapi<?php echo $i; ?>" method="POST" action="?page=ModifBook"><input type="hidden" name="bookid" value="<?php echo $i; ?>"></form>
 			    <?php
 			    }
 			    //vérifier si livre favori
 				if ($page=="Books"||$page=="Favoris"||$page=="Outils") {
+					
 					$queryfav="SELECT * FROM ".$mysql_prefix."favoris WHERE book=:book;";
 					$qfav = $pdo->prepare($queryfav);
 					$qfav->bindParam('book', $i, PDO::PARAM_INT);
 					$qfav->execute();
-					$favorite=$qfav->fetch();
 					$isfav=$qfav->rowCount();
-					$queryuser="SELECT nick FROM ".$mysql_prefix."users WHERE id=:id;";
-					$quser = $pdo->prepare($queryuser);
-					$quser->bindParam('id', $favorite['user'], PDO::PARAM_INT);
-					$quser->execute();
-					$favoriteuser=$quser->fetch();
-					if ($favoriteuser['nick']!="") $favtext="- Recommandé par ".$favoriteuser['nick'];
-					else $favtext="";
+					
+					$queryll="SELECT * FROM ".$mysql_prefix."listelec WHERE book=:book AND user=:user;";
+					$qll = $pdo->prepare($queryll);
+					$qll->bindParam('book', $i, PDO::PARAM_INT);
+					$qll->bindParam('user', $user['id'], PDO::PARAM_INT);
+					$qll->execute();
+					if ($qll->rowCount()>0) {
+						$styleicon="fas fa-bookmark";
+						$stringshelve=" onclick=\"window.document.dellll".$i.".submit()\"";
+						$color="color:red;";
+					} else {
+						$styleicon="fas fa-bookmark";
+						$stringshelve=" onclick=\"window.document.addll".$i.".submit()\"";
+						$color="";
+					}
+					
+					
+					$jnb=0;
+					$isuserfav="no";
+					while ($favorite=$qfav->fetch()) {
+						$queryuser="SELECT id,nick FROM ".$mysql_prefix."users WHERE id=:id;";
+						$quser = $pdo->prepare($queryuser);
+						$quser->bindParam('id', $favorite['user'], PDO::PARAM_INT);
+						$quser->execute();
+						$favoriteuser=$quser->fetch();
+						if ($favoriteuser['nick']!="") {
+							if ($jnb==0) $favtext="Recommandé par ";
+							if ($jnb>0) $favtext.=", ";
+							$favtext.=$favoriteuser['nick'];
+							if ($user['id']==$favorite['user']) $isuserfav=1;
+							$jnb++;
+						}
+					}
+					
 				}
 						//echo "<h6 style=\"cursor:pointer\" onclick=\"window.document.gotoauteur".$j.".submit()\">".$auteur['auteur']." ($nbl)</h6>";
 				echo "<form name=\"gotoauteur".$i."\" method=\"POST\" action=\"/\">
@@ -60,6 +100,7 @@ function showbook($i,$titre,$auteur,$descr,$sujet,$filename,$path,$user=false,$p
 				<input name=\"checksujet\" type=\"hidden\" value=\"0\">
 				<input name=\"checkauteur\" type=\"hidden\" value=\"1\">
 				<input name=\"checkauteurstrict\" type=\"hidden\" value=\"1\">
+				<input type=\"hidden\" name=\"searchchange\" value=\"go\">
 				</form>";
 			    
     ?>
@@ -69,25 +110,25 @@ function showbook($i,$titre,$auteur,$descr,$sujet,$filename,$path,$user=false,$p
 	        	<div class="row">
 		        	<div class="col-lg-2 my-auto">
 		        		<?php 
-		        		if(file_exists('Books/'.$path.'cover.jpg')) $img_bk=('Books/'.$pathto.'cover.jpg');
-		        		if($image!="") $img_bk=$image;
-		        		if($img_bk=="") $img_bk='images/nocover.jpg';
+		        		if(file_exists('Books/'.$path.'cover.jpg')) $img_bk="img.php?idimg=".$i;
+		        		else $img_bk='img.php?idimg=0';
 		        		if ($page=="Books"||$page=="Favoris"||$page=="Outils") {
 			        		if ($isfav==0) {
 			        		?>
 			        		<div class="bg-image">
 				        		<img class ="d-none d-lg-block rounded" src="<?php echo $img_bk; ?>" width="100%" alt="Couverture">
 								<h3><i class="far fa-star" style="cursor:pointer" onclick="window.document.addfav<?php echo $i; ?>.submit()"></i></h3>
+	            			
 	            			</div>
 	            			<?php } else { ?>
 	            			<div class="bg-image">
 	            				<?php 
-	            				if ($favorite['user']==$user['id']) {
-	            					$stringdelfav =" onclick=\"window.document.dellfav".$i.".submit()\"";
-	            				} else $stringdelfav="";
+	            				if ($isuserfav==1) $stringdelfav =" onclick=\"window.document.dellfav".$i.".submit()\"";
+	            				else $stringdelfav=" onclick=\"window.document.addfav".$i.".submit()\"";
 	            				?>
 				        		<img class ="d-none d-lg-block rounded" src="<?php echo $img_bk; ?>" width="100%" alt="Couverture">
-								<h3><i class="fa fa-star" style="cursor:pointer;color:orange"<?php echo $stringdelfav; ?>></i></h3>
+								<h3><i class="fa fa-star" style="cursor:pointer;color:orange"<?php echo $stringdelfav; ?>><span class="badge-notify" style="font-size:16px;color:black"><?php echo $isfav; ?></span></i></h3>
+	            			
 	            			</div>
 	            			<?php }
             			} else {
@@ -98,6 +139,7 @@ function showbook($i,$titre,$auteur,$descr,$sujet,$filename,$path,$user=false,$p
             			?>
 		        	</div>
 		        	<div class="col-lg-10 pl-4">
+					<h4 class="shelve"><i class="<?php echo $styleicon; ?>" style="cursor:pointer;<?php echo $color; ?>"<?php echo $stringshelve; ?>></i></h4>
 				      <h5><?php echo $titre; ?><small class="text-muted"> <em><?php echo $favtext; ?></em></small></h5>  		
 		              <div><h6 class="text-muted" style="cursor:pointer" onclick="window.document.gotoauteur<?php echo $i; ?>.submit()"><?php echo $auteur; ?></h6></div>
 		              <div style="height:126px;overflow:auto" class="pr-2"><p class="card-text mb-auto"><em><?php echo strip_tags($descr); ?></em></p></div>
@@ -121,7 +163,8 @@ function showbook($i,$titre,$auteur,$descr,$sujet,$filename,$path,$user=false,$p
 			            		if ($user['type']=="admin") echo "<span class=\"badge badge-info\"style=\"cursor:pointer\" data-toggle=\"modal\" data-target=\"#ModifBook".$i."\"><i class=\"fa fa-edit\"></i> Edition</span> ";
 			            		
 			             ?>
-			                  <a href="<?php echo "Books/".$pathto.$filename; ?>"><span class="badge badge-info"><i class="fa fa-download"></i> Télécharger</span></a> 
+			                  <?php echo"<a href=\"dl.php?idbook=$i&clebook=".md5($filename)."\" target=\"dlframe\"><span class=\"badge badge-info\"><i class=\"fa fa-download\"></i> Télécharger</span></a>"; ?>
+			                  <?php //echo "<a href=\"Books/".$pathto.$filename."\"><span class=\"badge badge-info\"><i class=\"fa fa-download\"></i> Télécharger</span></a>"; ?>
 				            <?php 
 				            } else { 
 				            ?>
@@ -229,41 +272,85 @@ function showbook($i,$titre,$auteur,$descr,$sujet,$filename,$path,$user=false,$p
     
 }
 
-function showuser($nick,$mail,$type,$iduser,$activ,$pdo,$mysql_prefix,$user) {
+function showuser($nick,$mail,$type,$iduser,$activ,$pdo,$mysql_prefix,$user,$style=false) {
     $query="SELECT COUNT(*) AS tot FROM ".$mysql_prefix."ebooks WHERE user=:id;";
 	  $q = $pdo->prepare($query);
 	  $q->bindParam('id', $iduser, PDO::PARAM_INT);
 	  $q->execute();
 	$nbb=$q->fetch(); 
-	
+	$page=$_GET['page'];
 	$query2="SELECT COUNT(*) AS tot FROM ".$mysql_prefix."favoris WHERE user=:id;";
 	  $q2 = $pdo->prepare($query2);
 	  $q2->bindParam('id', $iduser, PDO::PARAM_INT);
 	  $q2->execute();
 	$nbf=$q2->fetch(); 
-    
+	$query3="SELECT COUNT(*) AS tot FROM ".$mysql_prefix."listelec WHERE user=:id;";
+	  $q3 = $pdo->prepare($query3);
+	  $q3->bindParam('id', $iduser, PDO::PARAM_INT);
+	  $q3->execute();
+	$nbl=$q3->fetch(); 
     
     ?>
         
-	        <div class="card mb-4">
-	        	  
+	        
+	        	 
+	        	
 	        	<div class="row">
-		        	<div class="col-lg-2 my-auto"><img class ="d-none d-lg-block rounded" src="https://www.gravatar.com/avatar/<?php echo md5($mail); ?>?s=200&d=<?php echo urlencode('http://'.$_SERVER['SERVER_NAME'].'/images/avatar.png'); ?>" width="100%" alt="Profil"></div>
-		        	<div class="col-lg-10 pl-4">
+		        	<?php
+		        	if ($style!="menu") {
+		        	?>
+		        	<div class="col-lg-4 my-auto">
+		        	<?php
+		        	}
+		        	else echo"<div class=\"col-12 mx-1 my-auto\">";
+		        	?>
+		        		<img class ="d-none d-lg-block rounded" src="https://www.gravatar.com/avatar/<?php echo md5($mail); ?>?s=200&d=<?php echo urlencode('http://'.$_SERVER['SERVER_NAME'].'/images/'.$type.'.jpg'); ?>" width="100%" height:"100%" style="min-width:150px;min-height:150px" alt="Profil">
+						<div style="position:absolute;top:0;right:20px;"><span class="badge badge-info"><?php echo $type; ?></span></div>
+		        	</div>
+					<?php
+
+		        	if ($style!="menu") {
+		        	?>
+		        	<div class="col-lg-8 pl-4">
+		        	<?php
+		        	} else echo"<div class=\"col-12 mx-1\">";
+		        	?>
 				      <h5><?php echo $nick; ?></h5>  		
-		              <div class="text-muted"><?php echo $mail; ?></div>
-		              <div class="text-muted"><?php echo $type; ?></div>
-					  <div class="text-muted">Nombre de livres : <?php echo $nbb['tot']; ?> / Favoris : <?php echo $nbf['tot']; ?></div>
-					  <?php if ($user['type']=="admin"||$iduser==$user['id']) { ?>
-					  <button type="button" class="btn btn-sm btn-info" data-toggle="modal" data-target="#Modalmodif<?php echo $iduser; ?>">Modifier</button>
-					  <?php } 
-					  if ($user['type']=="admin") { ?>
-		              <?php if ($activ==1) { ?>
-		              <button type="button" class="btn btn-sm btn-danger" data-toggle="modal" data-target="#Modaldelete<?php echo $iduser; ?>">Supprimer</button>
-		              <?php } ?>
-		              <?php if ($activ==0) { ?>
-		              <button type="button" class="btn btn-sm btn-dark" data-toggle="modal" data-target="#Modalreactiv<?php echo $iduser; ?>">Réactiver</button>
-		              <?php } ?>
+		              <div class="text-muted"><?php //echo $mail; ?></div>
+		              
+					  <div class="row pl-4">
+					  	
+					  	<div class="text-muted d-inline mx-1"><small><i class="fa fa-book"></i> <?php echo $nbb['tot']; ?></small></div>
+					  	<div class="text-muted d-inline mx-1"><small><i class="fa fa-star" style="color:orange"></i> <?php echo $nbf['tot']; ?></small></div>
+					  	<div class="text-muted d-inline mx-1"><small><i class="fas fa-bookmark" style="color:red"></i> <?php echo $nbl['tot']; ?></small></div>	
+					  	
+					  </div>
+					  <?php 
+					  
+					  
+					  if ($user['type']=="admin"&&$style!="menu") { ?>
+						<div class="dropdown dropup" style="position:absolute;bottom:5px;right:25px;">
+						  <button class="btn btn-info btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						    <i class="fas fa-cog"></i>
+						  </button>
+						  <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+						    <a class="dropdown-item" href="#" data-toggle="modal" data-target="#ModalmodifU<?php echo $iduser; ?>">Modifier</a>
+						    <?php 
+						    
+						    if ($activ==1&&$user['type']=="admin") { ?>
+						    <a class="dropdown-item" href="#" data-toggle="modal" data-target="#Modaldelete<?php echo $iduser; ?>">Supprimer</a>
+						    <?php } ?>
+		            		<?php if ($activ==0&&$user['type']=="admin"&&$style!="menu") { ?>
+						    <a class="dropdown-item" href="#" data-toggle="modal" data-target="#Modalreactiv<?php echo $iduser; ?>">Réactiver</a>
+						    <?php } ?>
+						  </div>
+						</div>
+					  <?php
+					  }
+					  
+
+					  if ($user['type']=="admin"&&$style!="menu") { ?>
+
 
 							<!-- Modal -->
 							<div id="Modaldelete<?php echo $iduser; ?>" class="modal fade" role="dialog">
@@ -320,9 +407,26 @@ function showuser($nick,$mail,$type,$iduser,$activ,$pdo,$mysql_prefix,$user) {
 							</div>
 							<!-- fin modal -->
 						<?php } 
-						if ($user['type']=="admin"||$iduser==$user['id']) { ?>
+						if (($user['type']=="admin"&&$iduser!=$user['id'])) { 
+						
+							modifusertab($type,$iduser,$mail,$nick);
+						}
+							?>
+							
+				      </div>
+
+				</div>
+
+		        	
+		        
+		        		              
+
+    <?php
+}
+function modifusertab($type,$iduser,$mail,$nick) {
+	?>
 							<!-- Modal -->
-							<div id="Modalmodif<?php echo $iduser; ?>" class="modal fade" role="dialog">
+							<div id="ModalmodifU<?php echo $iduser; ?>" class="modal fade" role="dialog" tabindex="-1">
 							  <div class="modal-dialog">
 							
 							    <!-- Modal content-->
@@ -371,27 +475,18 @@ function showuser($nick,$mail,$type,$iduser,$activ,$pdo,$mysql_prefix,$user) {
 							  </div>
 							</div>
 							<!-- fin modals -->
-							<?php } ?>
-							
-				      </div>
- 		
-		        	</div>
-		        </div>
-		        		              
-
-    <?php
+							<?php
 }
-
 function showpagination ($p,$pmax,$page) {
 	?>
 		<div class="mx-auto">
 			<nav aria-label="..." class="centered">
 			  <ul class="pagination">
 			    <li class="page-item <?php if ($p==1) echo "disabled";?>">
-			      <a class="page-link" href="?page=<?php echo $page; ?>&p=1"><i class="fas fa-angle-double-left"></i></a>
+			      <a class="changepage page-link" href="#" onclick="changepage(1)"><i class="fas fa-angle-double-left"></i></a>
 			    </li>
 			    <li class="page-item <?php if ($p==1) echo "disabled";?>">
-			      <a class="page-link" href="?page=<?php echo $page; ?>&p=<?php echo $p-1;?>"><i class="fas fa-angle-left"></i></a>
+			      <a class="changepage page-link" href="#" onclick='changepage(<?php echo $p-1;?>)'><i class="fas fa-angle-left"></i></a>
 			    </li>
 			    <?php
 			    $plinktop=$p+3;
@@ -399,16 +494,16 @@ function showpagination ($p,$pmax,$page) {
 			    for ($i=$plinkmin;$i<=$plinktop;$i++) {
 			    	if ($i<=$pmax&&$i>=1) {
 				    	if ($i==$p) $active=" active"; else $active="";
-				    	echo "<li class=\"page-item$active\"><a class=\"page-link\" href=\"?page=$page&p=$i\">$i</a></li>";
+				    	echo "<li class=\"page-item$active\"><a class=\"changepage page-link\" href=\"#\" onclick='changepage($i)'>$i</a></li>";
 			    	}
 			    }
 			    
 			    ?>
 			    <li class="page-item <?php if ($p>=$pmax) echo "disabled";?>">
-			      <a class="page-link" href="?page=<?php echo $page; ?>&p=<?php echo $p+1;?>"><i class="fas fa-angle-right"></i></a>
+			      <a class="changepage page-link" href="#" onclick='changepage(<?php echo $p+1;?>)'><i class="fas fa-angle-right"></i></a>
 			    </li>
 			    <li class="page-item <?php if ($p>=$pmax) echo "disabled";?>">
-			      <a class="page-link" href="?page=<?php echo $page; ?>&p=<?php echo $pmax;?>"><i class="fas fa-angle-double-right"></i></a>
+			      <a class="changepage page-link" href="#" onclick='changepage(<?php echo $pmax;?>)'><i class="fas fa-angle-double-right"></i></a>
 			    </li>
 			  </ul>
 			</nav>
@@ -554,15 +649,84 @@ function Space_size($Bytes)
   return("".sprintf('%1.2f' ,$Bytes)." ".$Type[$Index]."bits");
 }
 
-function showdiskspace() {
+function showdiskspace($pdo,$mysql_prefix,$sizemax) {
 	$path = "/";
-	$freespace=disk_free_space($path);
-	$totalspace=disk_total_space($path);
-	$usedspace=$totalspace-$freespace;
+		$query="select sum(size) as total from ".$mysql_prefix."ebooks_infos;";
+		$q = $pdo->prepare($query);
+		$q->execute();
+		$size=$q->fetch(); 
+		//echo Space_size($size['total']);
+	
+	if ($sizemax==0) $totalspace=disk_total_space($path); else $totalspace=$sizemax*1024*1024*1024;
+	$usedspace=$size['total'];
+	$freespace=$totalspace-$usedspace;
 	$percentusedspace=sprintf('%1.2f' ,100*$usedspace/$totalspace);
 	echo "<div class=\"progress\">
 	  <div class=\"progress-bar bg-info\" role=\"progressbar\" style=\"width: ".$percentusedspace."%\" aria-valuenow=\"".$percentusedspace."\" aria-valuemin=\"0\" aria-valuemax=\"100\"></div>
 	</div>";
 	echo "<p class=\"text-muted\"><i>".Space_size($usedspace)." utilisés, ".Space_size($freespace)." libres sur ".Space_size($totalspace)." au total (".$percentusedspace."%)</i></p>";
 }
+function Majspace($pdo,$mysql_prefix,$id=false){
+	// trouver les fichiers n'ayant pas d'entrée select * from t2 where not exists (select null from t1 where t1.id = t2.id);
+	if ($id==false) {
+		//$query="SELECT * FROM ".$mysql_prefix."ebooks WHERE id NOT IN (SELECT book FROM ".$mysql_prefix."ebooks_infos);";
+		$query="select id,pathfile,filename from ".$mysql_prefix."ebooks where not exists (select * from ".$mysql_prefix."ebooks_infos where ".$mysql_prefix."ebooks_infos.book = ".$mysql_prefix."ebooks.id);";
+		$q = $pdo->prepare($query);
+		$q->execute();
+		while ($book=$q->fetch()) {
+			$space=0;
+			$spacejpg=0;
+			$spacefile=0;
+			if (file_exists("Books/".$book['pathfile'].'cover.jpg')) $spacejpg=filesize("Books/".$book['pathfile'].'cover.jpg'); else $spacejpg=0;
+			if (file_exists("Books/".$book['pathfile'].$book['filename'])) $spacefile=filesize("Books/".$book['pathfile'].$book['filename']); else $spacefile=0;
+			$space=$spacejpg+$spacefile;
+			$query2 = "INSERT INTO ".$mysql_prefix."ebooks_infos (book, size) 
+		    VALUES (:book, :size);";
+		    $q2 = $pdo->prepare($query2);
+		    $q2->bindParam('book', $book['id'], PDO::PARAM_INT);
+		    $q2->bindParam('size', $space, PDO::PARAM_INT);
+		    $q2->execute();
+		}
+		// effacer les livres supprimés
+		$query="select id from ".$mysql_prefix."ebooks_infos where not exists (select * from ".$mysql_prefix."ebooks where ".$mysql_prefix."ebooks_infos.book = ".$mysql_prefix."ebooks.id);";
+		$q = $pdo->prepare($query);
+		$q->execute();
+		while ($book=$q->fetch()) {
+			$query2 = "DELETE FROM ".$mysql_prefix."ebooks_infos WHERE id=:id;";
+		    $q2 = $pdo->prepare($query2);
+		    $q2->bindParam('id', $book['id'], PDO::PARAM_INT);
+		    $q2->execute();
+		}
+		//afficher l'espace total;
+		/*$query="select sum(size) as total from ".$mysql_prefix."ebooks_infos;";
+		$q = $pdo->prepare($query);
+		$q->execute();
+		$size=$q->fetch(); 
+		echo Space_size($size['total']);*/
+	}	
+	// remplacer seulement un fichier
+	if ($id!=false&&$dl==false) {
+		$query="SELECT * FROM ".$mysql_prefix."ebooks WHERE id=:id;";
+		$q = $pdo->prepare($query);
+		$q->bindParam('id', $id, PDO::PARAM_INT);
+		$q->execute();
+		$book=$q->fetch();
+		$space=0;
+		$spacejpg=0;
+		$spacefile=0;
+		if (file_exists("Books/".$book['pathfile'].'cover.jpg')) $spacejpg=filesize("Books/".$book['pathfile'].'cover.jpg'); else $spacejpg=0;
+		if (file_exists("Books/".$book['pathfile'].$book['filename'])) $spacefile=filesize("Books/".$book['pathfile'].$book['filename']); else $spacefile=0;
+		$space=$spacejpg+$spacefile;
+		$query = "UPDATE ".$mysql_prefix."ebooks_infos SET size=:size WHERE id=:id;";
+		$q = $pdo->prepare($query);
+		$q->bindParam('size', $space, PDO::PARAM_INT);
+		$q->bindParam('id', $id, PDO::PARAM_INT);
+		$q->execute();
+	}
+	
+	
+
+}
+
+
 ?>
