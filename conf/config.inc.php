@@ -7,9 +7,12 @@ $mysql_dbase = "";
 $mysql_prefix = "ebooX_"; 
 
 // nombre de livres à afficher par pages
-$limit=20;
+$limit=10;
 
 // forcer le ssl (no/yes)
-$forceSSL="no";
+$forceSSL="yes";
+
+// taille max de la bibliothèque en Go / 0 pour espace disque
+$sizemax=10;
 
 ?>
